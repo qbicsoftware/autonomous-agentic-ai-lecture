@@ -55,7 +55,8 @@ Typical actions include:
 ## 3. How Do Agentic AI Systems Differ From Other AI Approaches? 🔍
 
 ### Daily Office Example 🗂️
-*Handling incoming user questions via messaging platforms.*
+*Shadow-IT reality: a self-managed work laptop that holds business/customer/research data and is 
+connected to WhatsApp (or Slack or mail provider) —on the same device where agentic AI/LLM tools are experimented with.*
 
 ---
 
