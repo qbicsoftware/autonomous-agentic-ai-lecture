@@ -28,6 +28,4 @@ Agentic AI systems can **plan and act** via tools and integrations (messengers, 
 ## How to use
 Read the lecture notes in this folder from top to bottom. The material is designed to be digestible in a short session and to spark internal discussion about safe usage and mitigations.
 
-
-
-
+<a href="https://github.com/qbicsoftware/autonomous-agentic-ai-lecture">Autonomous Agentic AI in Core Facilities: Concepts and Security (Lecture Notes)</a> © 2026 by Sven Fillinger is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="max-width: 1em;max-height:1em;margin-left: .2em;">

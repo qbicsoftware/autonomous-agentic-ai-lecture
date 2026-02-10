@@ -5,7 +5,8 @@
 
 ## 1. Why This Lecture Exists 🎯
 
-Autonomous **agentic Artificial Intelligence (AI)** systems are increasingly used in research and administrative workflows at universities.
+Autonomous **agentic Artificial Intelligence (AI)** systems are becoming easier to access and integrate into everyday workflows. 
+Because the convenience is high and the hurdle to try them is low, it is plausible that they will show up in research and administrative contexts—often faster than formal guidance can keep up.
 
 Unlike familiar chatbots, these systems do not only *respond* — they **act autonomously**, interact with tools, and communicate with external services.
 
