@@ -4,7 +4,7 @@ A small, in-house sensitization project about **agentic (autonomous) AI**: what 
 
 
 Add a short disclaimer section near the top (right after the title / before “What’s inside”) and optionally repeat a one-liner again at the end.
-You can paste this as-is (German wording, matching your terms):``` markdown
+You can paste this as-is (German wording, matching your terms):
 
 > **Disclaimer (WIP)**  
 > This document/project is **work in progress (WIP)** and the information provided is **not complete** and may be incorrect or outdated.  
