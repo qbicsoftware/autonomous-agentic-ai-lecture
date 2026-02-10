@@ -15,5 +15,9 @@ Topics to cover are:
 - What can developers do, to harden their autonomous AI system? How does sandboxing work here?
 
 Give an overview of how exfiltration attacks work with the example of OpenClaw and when it is connected
-to a publicly available communication platform. Assume Whatsapp and assume the victim is also in a public Whatsapp channel, where the attack starts. For the attack, assume network access is possible for the agent
-so HTTP messages can leave the local network and can send to any service in the internet.
+to a publicly available communication platform. 
+As the exfiltration example via prompt injection, assume the victim uses OpenClaw on their work laptop and
+have connected the OpenClaw agent to the WhatsApp API. The attack shall start from an Whatsapp Group the user
+also is part of.
+Assume OpenClaw has network access and that the attack successfully sends sensitive information to the attackers
+web server via simple HTTP, which is not captured by institutional firewalls.
