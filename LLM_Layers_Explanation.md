@@ -18,17 +18,18 @@ We'll use concrete examples from:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ LAYER 4: END-USER APPLICATIONS                                 │
-│ ChatGPT │ Claude.ai │ Copilot │ Perplexity │ Character.ai      │
+│ LAYER 4: END-USER APPLICATIONS                                  │
+│ ChatGPT │ Claude.ai │ Copilot │ Perplexity │ Character.ai       │
 ├─────────────────────────────────────────────────────────────────┤
-│ LAYER 3: AGENT FRAMEWORKS & ORCHESTRATION                      │
-│ LangChain │ CrewAI │ AutoGPT │ Assistants API │ opencode.ai     │
+│ LAYER 3: AGENT FRAMEWORKS & ORCHESTRATION                       │
+│ LangChain │ CrewAI │ AutoGPT │ Assistants API │ Claude Code CLI │
+│ Codex CLI │ opencode.ai                                         │
 ├─────────────────────────────────────────────────────────────────┤
-│ LAYER 2: MODEL APIs & SERVICES                                 │
+│ LAYER 2: MODEL APIs & SERVICES                                  │
 │ OpenAI API │ Anthropic │ Google AI │ Azure OpenAI │ Together    │
 ├─────────────────────────────────────────────────────────────────┤
-│ LAYER 1: FOUNDATION MODELS                                     │
-│ Closed: GPT-4o, Claude, Gemini  │  Open: Llama, Mistral, Qwen  │
+│ LAYER 1: FOUNDATION MODELS                                      │
+│ Closed: GPT-4o, Claude, Gemini  │  Open: Llama, Mistral, Qwen   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
