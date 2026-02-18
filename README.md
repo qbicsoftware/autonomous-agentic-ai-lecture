@@ -1,10 +1,6 @@
 # Agentic AI introduction
 
-A small, in-house sensitization project about **agentic (autonomous) AI**: what it is, how it differs from “classic” LLM chatbots, and why it matters—especially from a **security and organizational risk** perspective in research environments.
-
-
-Add a short disclaimer section near the top (right after the title / before “What’s inside”) and optionally repeat a one-liner again at the end.
-You can paste this as-is (German wording, matching your terms):
+A small, in-house sensitization project about **agentic (autonomous) AI**: what it is, how it differs from "classic" LLM chatbots, and why it matters—especially from a **security and organizational risk** perspective in research environments.
 
 > **Disclaimer (WIP)**  
 > This document/project is **work in progress (WIP)** and the information provided is **not complete** and may be incorrect or outdated.  
@@ -12,8 +8,8 @@ You can paste this as-is (German wording, matching your terms):
 > It is **not a guidance** and **not a security best practice**.  
 > It is intended as an **impulse for discussion** and internal awareness building.
 
-
-## What’s inside
+## What's inside
+- [**Understanding the Layers of the LLM Ecosystem**](LLM_Layers_Explanation.md) — A comprehensive guide that explains the four-layer model of the LLM ecosystem (Foundation Models, APIs, Agents, Applications) with concrete examples and decision frameworks. Provides foundational knowledge of the LLM landscape that underpins agentic AI security concepts.
 - A short lecture-style write-up introducing **autonomous agentic AI** concepts
 - An investigation-oriented narrative focused on **security concerns** (e.g., prompt injection, data exfiltration, plugin/integration risks)
 - Supporting notes/materials used to communicate these ideas in a compact format
