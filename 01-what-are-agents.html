@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What are AI Agents?</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-elevated: #161920;
+    --text: #e8ecf1;
+    --text-muted: #8b949e;
+    --accent: #2dd4bf;
+    --accent-dim: #115e59;
+    --border: #30363d;
+    --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-main);
+  }
+  .deck {
+    display: flex;
+    width: max-content;
+    height: 100vh;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6vh 10vw;
+    position: relative;
+  }
+  h1 { font-size: clamp(2.8rem, 6vh, 5rem); margin-bottom: 2vh; color: var(--accent); letter-spacing: -0.02em; }
+  h2 { font-size: clamp(2rem, 4.5vh, 3.5rem); margin-bottom: 3vh; color: var(--text); }
+  h3 { font-size: clamp(1.4rem, 3vh, 2.2rem); margin-bottom: 2vh; color: var(--accent); }
+  p, li { font-size: clamp(1.3rem, 2.4vh, 1.9rem); line-height: 1.55; max-width: 78vw; }
+  ul { list-style: none; padding: 0; }
+  ul li { margin-bottom: 1.8vh; padding-left: 2.2vw; position: relative; }
+  ul li::before {
+    content: "▸";
+    position: absolute; left: 0;
+    color: var(--accent);
+    font-weight: bold;
+  }
+  .muted { color: var(--text-muted); }
+
+  .nav-zone {
+    position: fixed;
+    top: 0; bottom: 0;
+    width: 12vw;
+    z-index: 10;
+    cursor: pointer;
+  }
+  .nav-prev { left: 0; }
+  .nav-next { right: 0; }
+
+  .progress {
+    position: fixed;
+    bottom: 0; left: 0;
+    height: 6px;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.3s;
+    z-index: 20;
+  }
+  .slide-counter {
+    position: fixed;
+    bottom: 2vh;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--text-muted);
+    font-size: clamp(0.9rem, 1.6vh, 1.2rem);
+    z-index: 20;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 1.2vw;
+    margin: 2vh 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .box {
+    background: var(--bg-elevated);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 2.2vh 2.4vw;
+    font-size: clamp(1rem, 2.1vh, 1.5rem);
+    text-align: center;
+    min-width: 13vw;
+    font-weight: 600;
+  }
+  .box.accent { border-color: var(--accent); color: var(--accent); }
+  .arrow {
+    font-size: clamp(1.6rem, 3vh, 2.6rem);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .schema-box {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2vh 2vw;
+    font-family: var(--font-mono);
+    font-size: clamp(0.95rem, 1.8vh, 1.35rem);
+    color: #a5d6ff;
+    text-align: left;
+    max-width: 72vw;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+  }
+
+  .token-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: center;
+    gap: 2vw;
+    margin-top: 3vh;
+    width: 100%;
+    max-width: 80vw;
+  }
+  .token-box {
+    background: var(--bg-elevated);
+    border: 2px solid var(--accent-dim);
+    border-radius: 12px;
+    padding: 2.2vh 2vw;
+    text-align: center;
+    font-size: clamp(1rem, 2vh, 1.5rem);
+  }
+
+  .loop-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5vh;
+    margin: 3vh 0;
+  }
+  .loop-row {
+    display: flex;
+    align-items: center;
+    gap: 2vw;
+  }
+  .loop-arrows {
+    display: flex;
+    justify-content: space-between;
+    width: min(50vw, 500px);
+    padding: 0 2vw;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5vw;
+    width: 100%;
+    max-width: 80vw;
+  }
+
+  code {
+    background: var(--bg-elevated);
+    padding: 0.2em 0.5em;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 0.92em;
+    border: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    padding: 0.35em 0.9em;
+    border-radius: 999px;
+    font-size: 0.8em;
+    font-weight: 700;
+    margin-bottom: 0.6vh;
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 768px) {
+    .columns { grid-template-columns: 1fr; }
+    .token-flow { grid-template-columns: 1fr; }
+    .token-flow .arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Title -->
+  <section class="slide">
+    <h1>What are AI Agents?</h1>
+    <p style="margin-top: 2vh;">
+      A primer for researchers applying coding agents<br>to data analysis & software development
+    </p>
+    <p class="muted" style="margin-top: 8vh; font-size: clamp(1.1rem, 2vh, 1.6rem);">
+      Navigate with ← → arrow keys, click screen edges, or swipe
+    </p>
+  </section>
+
+  <!-- Slide 2: Definition -->
+  <section class="slide">
+    <h2>Agent = LLM + Loop + Tools</h2>
+    <ul>
+      <li>An <strong>autonomous system</strong> that reasons, plans, and acts via external tools</li>
+      <li>It is <strong>not</strong> just a chatbot — it <strong>executes</strong> actions on your behalf</li>
+      <li>The core functionality is <strong>always the same</strong>, regardless of task complexity</li>
+    </ul>
+  </section>
+
+  <!-- Slide 3: Core Loop -->
+  <section class="slide">
+    <h2>The Universal Agent Loop</h2>
+    <div class="loop-wrapper">
+      <div class="loop-row">
+        <div class="box">Perceive</div>
+        <span class="arrow">→</span>
+        <div class="box accent">Reason</div>
+      </div>
+      <div class="loop-arrows">
+        <span class="arrow">↑</span>
+        <span class="arrow">↓</span>
+      </div>
+      <div class="loop-row">
+        <div class="box">Observe</div>
+        <span class="arrow">←</span>
+        <div class="box accent">Act</div>
+      </div>
+    </div>
+    <p class="muted">Every agent — from simple scripts to coding harnesses — follows this exact cycle.</p>
+  </section>
+
+  <!-- Slide 4: Loop Escape -->
+  <section class="slide">
+    <h2>When Does the Loop End?</h2>
+    <div class="loop-wrapper">
+      <div style="position:relative; border:3px dashed var(--accent-dim); border-radius:20px; padding:3vh 4vw; margin-bottom:2vh;">
+        <div class="loop-row">
+          <div class="box">Perceive</div>
+          <span class="arrow">→</span>
+          <div class="box accent">Reason</div>
+          <span class="arrow">→</span>
+          <div class="box">Act</div>
+          <span class="arrow">→</span>
+          <div class="box">Observe</div>
+        </div>
+        <div style="position:absolute; right:-2vw; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; gap:1vh;">
+          <span class="arrow" style="font-size:3rem;">→</span>
+          <div class="box accent" style="font-size:clamp(0.9rem,1.8vh,1.3rem);">Escape Gate</div>
+        </div>
+      </div>
+      <ul style="max-width:70vw; text-align:left;">
+        <li><strong>Task complete</strong> — the LLM signals it needs no more tools</li>
+        <li><strong>Max iterations</strong> — a hard cap prevents infinite loops</li>
+        <li><strong>Error / unrecoverable</strong> — execution fails and safety kicks in</li>
+        <li><strong>User interrupts</strong> — explicit stop or cancellation</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Slide 5: Anatomy -->
+  <section class="slide">
+    <h2>Anatomy of an Agent</h2>
+    <div class="flow">
+      <div class="box accent">System Prompt</div>
+      <span class="arrow">→</span>
+      <div class="box">LLM Core</div>
+      <span class="arrow">→</span>
+      <div class="box accent">Tool Registry</div>
+      <span class="arrow">→</span>
+      <div class="box">Memory / State</div>
+    </div>
+    <ul style="margin-top: 3vh;">
+      <li><strong>System Prompt:</strong> Instructions, personality, and available capabilities</li>
+      <li><strong>Tool Registry:</strong> Catalog of functions the agent is allowed to invoke</li>
+      <li><strong>Memory:</strong> Conversation history, file contents, and intermediate results</li>
+    </ul>
+  </section>
+
+  <!-- Slide 6: LLM Interaction -->
+  <section class="slide">
+    <h2>How Agents Talk to LLMs</h2>
+    <ul>
+      <li><strong>System Prompt</strong> primes the model with identity, rules, and tool descriptions</li>
+      <li><strong>Tool Schemas</strong> are injected into the prompt so the LLM "knows" what's available</li>
+      <li><strong>Function Calling API</strong> constrains output to valid JSON matching a schema</li>
+      <li>The LLM <strong>probabilistically generates</strong> which tool to call — it is not a hard-coded rule</li>
+    </ul>
+    <div class="schema-box" style="margin-top: 2vh;">{
+  "name": "run_python",
+  "description": "Execute Python code for data analysis",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "code": { "type": "string", "description": "Python code to run" }
+    },
+    "required": ["code"]
+  }
+}</div>
+  </section>
+
+  <!-- Slide 7: Token Flow -->
+  <section class="slide">
+    <h2>Token Flow in the Loop</h2>
+    <div class="token-flow">
+      <div class="token-box">
+        <div class="badge">INPUT</div>
+        <div>Prompt + History + Schemas</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="token-box" style="border-color:var(--accent);">
+        <div class="badge">LLM</div>
+        <div>Reasoning + Function Call JSON</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="token-box">
+        <div class="badge">AGENT</div>
+        <div>Parse JSON → Execute → Append Result</div>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: 4vh;">
+      Each cycle consumes <strong>prompt tokens</strong> and produces <strong>completion tokens</strong>.<br>
+      The agent feeds tool results back into context and repeats.
+    </p>
+  </section>
+
+  <!-- Slide 8: Decision vs Execution -->
+  <section class="slide">
+    <h2>Who Decides vs. Who Executes</h2>
+    <div class="flow" style="align-items:flex-start; margin-bottom:4vh;">
+      <div style="text-align:center;">
+        <div class="badge">REMOTE</div>
+        <div class="box accent" style="margin-bottom:1.5vh;">LLM</div>
+        <ul style="font-size:clamp(1rem,2vh,1.5rem); text-align:left; max-width:28vw;">
+          <li>Receives tool schemas <strong>inside the prompt</strong></li>
+          <li><strong>Probabilistically generates</strong> a tool call JSON</li>
+          <li>Constrained by API grammar to valid schemas</li>
+          <li class="muted">Never touches your files — only plans</li>
+        </ul>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2vh; padding:0 2vw;">
+        <span class="arrow">↓</span>
+        <div class="box" style="font-size:clamp(0.9rem,1.8vh,1.3rem); min-width:auto;">JSON tool_call</div>
+        <span class="arrow">↓</span>
+      </div>
+      <div style="text-align:center;">
+        <div class="badge">LOCAL</div>
+        <div class="box accent" style="margin-bottom:1.5vh;">Agent Runtime</div>
+        <ul style="font-size:clamp(1rem,2vh,1.5rem); text-align:left; max-width:28vw;">
+          <li>Parses the JSON request</li>
+          <li><strong>Executes</strong> the native function</li>
+          <li>Captures stdout / result</li>
+          <li class="muted">Runs on your machine</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted">The LLM only <strong>plans</strong>. The agent <strong>acts</strong> in your environment.</p>
+  </section>
+
+  <!-- Slide 9: Tools vs Skills -->
+  <section class="slide">
+    <h2>Tools &amp; Skills</h2>
+    <div class="columns">
+      <div>
+        <h3>🔧 Tool</h3>
+        <ul>
+          <li>Atomic capability</li>
+          <li>Schema + executor</li>
+          <li>Examples: <code>bash</code>, <code>read_file</code>, <code>web_search</code></li>
+        </ul>
+      </div>
+      <div>
+        <h3>🧠 Skill</h3>
+        <ul>
+          <li>Curated expertise bundle</li>
+          <li>Tools + prompt templates + domain logic</li>
+          <li>Examples: GitHub CLI skill, Data analysis skill</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 10: MCP -->
+  <section class="slide">
+    <h2>MCP — Model Context Protocol</h2>
+    <ul>
+      <li>An <strong>open standard</strong> (pioneered by Anthropic) for connecting agents to external systems</li>
+      <li>Think of it as <strong>USB-C for AI capabilities</strong></li>
+      <li>An <strong>MCP Server</strong> exposes resources, prompts, and tools</li>
+      <li>Any <strong>MCP Client</strong> (agent) can consume them dynamically</li>
+    </ul>
+    <div class="flow" style="margin-top: 3vh;">
+      <div class="box">Your Agent</div>
+      <span class="arrow">⇄</span>
+      <div class="box accent">MCP Layer</div>
+      <span class="arrow">⇄</span>
+      <div class="box">Database / Git / Browser / IDE</div>
+    </div>
+  </section>
+
+  <!-- Slide 11: Revolution for Researchers -->
+  <section class="slide">
+    <h2>Why This Revolutionizes Coding Agents</h2>
+    <ul>
+      <li><strong>Dynamic discovery:</strong> Agents adapt to your stack instead of relying on hardcoded scripts</li>
+      <li><strong>Universal plug-ins:</strong> One protocol connects any data source or tool</li>
+      <li><strong>For researchers:</strong> automate analysis, literature search, version control, and experiments</li>
+      <li><strong>Decoupled architecture:</strong> Tool authors and agent builders work independently</li>
+    </ul>
+  </section>
+
+  <!-- Slide 12: Summary -->
+  <section class="slide">
+    <h2>The Big Picture</h2>
+    <ul>
+      <li>The <strong>core loop</strong> (Perceive → Reason → Act → Observe) is timeless</li>
+      <li>The power comes from <strong>better LLMs</strong>, <strong>richer tools</strong>, and <strong>standardized protocols</strong></li>
+      <li><strong>MCP</strong> turns isolated agents into extensible, general-purpose platforms</li>
+      <li>For your daily work: <strong>install an agent, connect MCP servers, automate workflows</strong></li>
+    </ul>
+    <p class="muted" style="margin-top: 6vh; font-size: clamp(1.3rem, 2.4vh, 1.9rem);">Questions?</p>
+  </section>
+
+</div>
+
+<div class="nav-zone nav-prev" onclick="goPrev()"></div>
+<div class="nav-zone nav-next" onclick="goNext()"></div>
+<div class="progress" id="progress"></div>
+<div class="slide-counter"><span id="slide-num">1</span> / <span id="slide-total">12</span></div>
+
+<script>
+  let current = 0;
+  const deck = document.getElementById('deck');
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+  const numEl = document.getElementById('slide-num');
+  const totalEl = document.getElementById('slide-total');
+  const total = slides.length;
+
+  function update() {
+    deck.style.transform = `translateX(-${current * 100}vw)`;
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+    numEl.textContent = current + 1;
+  }
+
+  function goNext() {
+    if (current < total - 1) { current++; update(); }
+  }
+
+  function goPrev() {
+    if (current > 0) { current--; update(); }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault();
+      goNext();
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      goPrev();
+    }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (diff < -50) goNext();
+    if (diff > 50) goPrev();
+  }, { passive: true });
+
+  totalEl.textContent = total;
+  update();
+</script>
+
+</body>
+</html>
