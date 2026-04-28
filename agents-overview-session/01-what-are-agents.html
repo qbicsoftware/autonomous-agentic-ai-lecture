@@ -425,7 +425,169 @@
     </ul>
   </section>
 
-  <!-- Slide 12: Summary -->
+  <!-- Slide 12: The Chaotic Agent Landscape -->
+  <section class="slide">
+    <h2>The Agent Landscape: A Wild Frontier</h2>
+    <div class="columns" style="margin-top: 2vh;">
+      <div>
+        <h3>🌐 Consumer Chat Agents</h3>
+        <ul>
+          <li><strong>ChatGPT</strong> — web search, code, Canvas</li>
+          <li><strong>Claude</strong> — artifacts, reasoning</li>
+          <li><strong>Gemini</strong> — multimodal, Google integration</li>
+          <li><strong>Pi</strong> — conversational, personal</li>
+        </ul>
+      </div>
+      <div>
+        <h3>💻 Coding Agents</h3>
+        <ul>
+          <li><strong>Cursor</strong> — IDE-integrated editor</li>
+          <li><strong>Claude Code</strong> — terminal harness</li>
+          <li><strong>pi-coding-agent</strong> — terminal harness</li>
+          <li><strong>Devin</strong> — fully autonomous SWE</li>
+          <li><strong>Codex</strong> — OpenAI's agent</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: 4vh;">Common pattern: <strong>LLM core + tool loop</strong>. Only the packaging differs.</p>
+  </section>
+
+  <!-- Slide 13: The Fragmentation Problem -->
+  <section class="slide">
+    <h2>The Fragmentation Problem</h2>
+    <ul>
+      <li>Each agent <strong>locks you into</strong> their LLM choice — or so it seems</li>
+      <li>Cursor uses their own stack; Claude Code requires Anthropic API</li>
+      <li>Self-made scripts must <strong>hardcode provider SDKs</strong> (OpenAI, Anthropic, Google...)</li>
+      <li>Tool ecosystems are siloed — Cursor extensions ≠ Claude Code skills</li>
+    </ul>
+    <div class="flow" style="margin-top: 4vh; opacity: 0.7;">
+      <div class="box">Agent A</div>
+      <span class="arrow">✕</span>
+      <div class="box">Agent B</div>
+      <span class="arrow">✕</span>
+      <div class="box">Agent C</div>
+      <span class="arrow">✕</span>
+      <div class="box">Agent D</div>
+    </div>
+    <p class="muted" style="margin-top: 3vh;">The chaos: N agents × M providers = integration nightmare.</p>
+  </section>
+
+  <!-- Slide 14: Inference Providers -->
+  <section class="slide">
+    <h2>Inference Providers: The Abstraction Layer</h2>
+    <ul>
+      <li><strong>Inference providers</strong> run LLMs behind a standardized API</li>
+      <li>Examples: <strong>OpenAI API</strong>, <strong>Anthropic API</strong>, <strong>Groq</strong>, <strong>Together</strong>, <strong>Ollama</strong>, <strong>vLLM</strong></li>
+      <li>They expose the <strong>same interface</strong>: chat completions with function calling</li>
+      <li>You <strong>swap providers</strong> by changing a base URL and API key</li>
+    </ul>
+    <div class="schema-box" style="margin-top: 2vh;">POST /v1/chat/completions
+{
+  "model": "gpt-4o" | "claude-3-opus" | "llama-3.1-405b",
+  "messages": [...],
+  "tools": [...]  // Function schemas go here
+}</div>
+  </section>
+
+  <!-- Slide 15: The OpenAI API Standard -->
+  <section class="slide">
+    <h2>The OpenAI API Standard</h2>
+    <ul>
+      <li>Not OpenAI-specific — it's the <strong>de facto industry standard</strong></li>
+      <li>Open-source servers (Ollama, vLLM, llama.cpp) all implement it</li>
+      <li>Any client code using this standard works with <strong>any provider</strong></li>
+      <li>Function calling, streaming, tool use — all normalized</li>
+    </ul>
+    <div class="flow" style="margin-top: 4vh;">
+      <div class="box">Your Agent Code</div>
+      <span class="arrow">→</span>
+      <div class="box accent">OpenAI-Compatible Client</div>
+      <span class="arrow">→</span>
+      <div class="box">Any Provider</div>
+    </div>
+  </section>
+
+  <!-- Slide 16: Provider Agnostic Agents -->
+  <section class="slide">
+    <h2>Provider-Agnostic Agents</h2>
+    <div class="columns">
+      <div>
+        <h3>🔌 What You Can Do</h3>
+        <ul>
+          <li>Use <strong>GPT-4</strong> for reasoning</li>
+          <li>Use <strong>Claude</strong> for long context</li>
+          <li>Use <strong>Llama</strong> for on-premise privacy</li>
+          <li>Use <strong>Groq</strong> for speed</li>
+          <li>All with <strong>the same agent code</strong></li>
+        </ul>
+      </div>
+      <div>
+        <h3>🛠️ How It Works</h3>
+        <ul>
+          <li>Configure <code>base_url</code> + <code>api_key</code></li>
+          <li>Same JSON schema for tools</li>
+          <li>Same chat completion calls</li>
+          <li>Same response parsing</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: 4vh;">The agent doesn't care <em>who</em> runs the LLM — only that the protocol is followed.</p>
+  </section>
+
+  <!-- Slide 17: Building Your Own Agent -->
+  <section class="slide">
+    <h2>Build Your Own Agent in 50 Lines</h2>
+    <div class="schema-box" style="font-size: clamp(0.85rem, 1.6vh, 1.2rem);">import openai  # OpenAI-compatible client
+
+client = openai.OpenAI(
+    base_url="https://api.openai.com/v1",  # Or Groq, Ollama, etc.
+    api_key="..."
+)
+
+# The agent loop
+def agent_loop(prompt, tools):
+    messages = [{"role": "user", "content": prompt}]
+    while True:
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=messages,
+            tools=tools
+        )
+        msg = response.choices[0].message
+        if msg.tool_calls:
+            messages.append(msg)
+            for call in msg.tool_calls:
+                result = execute_tool(call)  # Your code here
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": call.id,
+                    "content": str(result)
+                })
+        else:
+            return msg.content  # Done!</div>
+    <p class="muted" style="margin-top: 2vh;">This works with <strong>any</strong> OpenAI-compatible provider.</p>
+  </section>
+
+  <!-- Slide 18: Protocol Over Product -->
+  <section class="slide">
+    <h2>Protocols > Products</h2>
+    <ul>
+      <li><strong>MCP</strong> standardizes <em>tools</em> — any agent can use any MCP server</li>
+      <li><strong>OpenAI API</strong> standardizes <em>LLM access</em> — any agent can use any provider</li>
+      <li>Together: <strong>build once, run anywhere</strong></li>
+      <li>Your custom agent competes with Cursor/Claude Code on <strong>your terms</strong></li>
+    </ul>
+    <div class="flow" style="margin-top: 4vh;">
+      <div class="box accent">MCP</div>
+      <span class="arrow">+</span>
+      <div class="box accent">OpenAI API</div>
+      <span class="arrow">=</span>
+      <div class="box" style="border-color:var(--accent); color:var(--accent);">Universal Agent</div>
+    </div>
+  </section>
+
+  <!-- Slide 19: Summary -->
   <section class="slide">
     <h2>The Big Picture</h2>
     <ul>
