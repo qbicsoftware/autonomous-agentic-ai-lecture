@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Systems: When to Use Them</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Sora:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: #f8f6f1;
+            color: #2c2c2c;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f6f1 0%, #faf8f3 100%);
+        }
+
+        .slide {
+            position: absolute;
+            width: 90vw;
+            max-width: 1000px;
+            height: 90vh;
+            max-height: 700px;
+            background: white;
+            border-radius: 12px;
+            padding: 60px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .slide.prev {
+            transform: translateX(-100px);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .point {
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #3a3a3a;
+        }
+
+        .point strong {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .highlight {
+            color: #c17f5b;
+            font-weight: 600;
+        }
+
+        .situation {
+            background: #fafaf8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #c17f5b;
+        }
+
+        .situation-title {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .situation-desc {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .visualization {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e8e8e8;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .slide-number {
+            font-weight: 600;
+            color: #c17f5b;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 100;
+        }
+
+        button {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            color: #2c2c2c;
+            font-size: 1.2rem;
+        }
+
+        button:hover {
+            background: #c17f5b;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #c17f5b;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .framework {
+            background: #fafaf8;
+            padding: 25px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #3a3a3a;
+        }
+
+        .framework strong {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            color: #1a1a1a;
+        }
+
+        .framework-answer {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.9;
+        }
+
+        .checklist-item {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .checklist-item strong {
+            color: #1a1a1a;
+            min-width: 120px;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .col-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .col-content p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 800px) {
+            .slide {
+                padding: 40px;
+                height: auto;
+                max-height: none;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        .key-takeaway {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #2c2c2c;
+        }
+
+        .key-takeaway strong {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            color: #c17f5b;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <div>
+                <h1>Multi-Agent Systems</h1>
+                <p class="subtitle">When to Use Them</p>
+            </div>
+            <div class="content">
+                <div class="point">Most teams overestimate how much they need multiple agents.</div>
+                <div class="point">One agent with good instructions often <span class="highlight">outperforms</span> multiple agents.</div>
+                <div class="point">This presentation shows you <span class="highlight">when</span> multiple agents actually help.</div>
+            </div>
+            <div class="footer">
+                <div>Best practices for daily usage</div>
+                <div class="slide-number">1 / 9</div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+            <h2>What You Need to Know</h2>
+            <div class="content">
+                <div class="situation">
+                    <div class="situation-title">One Agent</div>
+                    <div class="situation-desc">You ask Claude → It solves it → Done</div>
+                </div>
+                <div class="situation">
+                    <div class="situation-title">Multiple Agents</div>
+                    <div class="situation-desc">Lead agent spawns specialists → Each handles part → Results combine</div>
+                </div>
+                <div style="margin-top: 30px;">
+                    <div class="point"><span class="highlight">The cost:</span> 3-10x more tokens, more complexity, more failure points</div>
+                    <div class="point"><span class="highlight">The rule:</span> Only add agents when you're stuck on a specific problem.</div>
+                </div>
+            </div>
+            <div class="footer">
+                <div></div>
+                <div class="slide-number">2 / 9</div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <h2>Three Situations Where Multiple Agents Win</h2>
+            <div class="content">
+                <div class="situation">
+                    <div class="situation-title">1. Information Overload</div>
+                    <div class="situation-desc">Early data clutters thinking. Separate agent extracts essentials. Main agent stays focused.</div>
+                </div>
+                <div class="situation">
+                    <div class="situation-title">2. Parallel Work</div>
+                    <div class="situation-desc">Independent pieces run simultaneously. Larger information space covered than one agent can handle.</div>
+                </div>
+                <div class="situation">
+                    <div class="situation-title">3. Too Many Tools</div>
+                    <div class="situation-desc">15+ tools confuse the AI. Specialist agents with focused toolsets pick correctly.</div>
+                </div>
+            </div>
+            <div class="footer">
+                <div></div>
+                <div class="slide-number">3 / 9</div>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+            <h2>Situation 1: Information Overload</h2>
+            <div class="content">
+                <div class="visualization">
+                    <svg viewBox="0 0 500 250" width="450" height="220">
+                        <!-- Before -->
+                        <text x="125" y="30" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">Before: One Agent</text>
+                        <rect x="30" y="50" width="190" height="150" rx="6" fill="#fff5f3" stroke="#c17f5b" stroke-width="2"/>
+                        <text x="125" y="75" font-size="12" font-weight="600" text-anchor="middle" fill="#1a1a1a">Order History</text>
+                        <text x="125" y="95" font-size="11" text-anchor="middle" fill="#666">(20 pages)</text>
+                        <rect x="50" y="110" width="150" height="40" rx="4" fill="#fde4db" stroke="#c17f5b" stroke-width="1.5"/>
+                        <text x="125" y="138" font-size="11" text-anchor="middle" fill="#666">Clutters thinking</text>
+                        
+                        <text x="125" y="185" font-size="12" font-weight="600" text-anchor="middle" fill="#c17f5b">Lower quality answers</text>
+
+                        <!-- After -->
+                        <text x="375" y="30" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">After: Multiple Agents</text>
+                        
+                        <!-- Order Agent -->
+                        <rect x="290" y="50" width="85" height="70" rx="6" fill="#fafaf8" stroke="#999" stroke-width="1.5"/>
+                        <text x="332" y="70" font-size="11" font-weight="600" text-anchor="middle" fill="#1a1a1a">Order Agent</text>
+                        <text x="332" y="90" font-size="10" text-anchor="middle" fill="#666">(20 pages)</text>
+                        <text x="332" y="105" font-size="10" text-anchor="middle" fill="#666">→ 3 sentences</text>
+
+                        <!-- Arrow -->
+                        <path d="M 375 120 L 375 140" stroke="#999" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                        <!-- Support Agent -->
+                        <rect x="290" y="140" width="85" height="70" rx="6" fill="#fafaf8" stroke="#c17f5b" stroke-width="2"/>
+                        <text x="332" y="160" font-size="11" font-weight="600" text-anchor="middle" fill="#1a1a1a">Support Agent</text>
+                        <text x="332" y="180" font-size="10" text-anchor="middle" fill="#666">Clean context</text>
+                        <text x="332" y="195" font-size="10" text-anchor="middle" fill="#666">Focused solving</text>
+                        
+                        <text x="375" y="230" font-size="12" font-weight="600" text-anchor="middle" fill="#666">Better quality</text>
+
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#999"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                <div style="text-align: center; font-size: 0.95rem; color: #666;">
+                    When: Pulling 1000+ irrelevant tokens. Clear extraction rules exist. Main task needs focus.
+                </div>
+            </div>
+            <div class="footer">
+                <div></div>
+                <div class="slide-number">4 / 9</div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide">
+            <h2>Situation 2: Parallel Work</h2>
+            <div class="content">
+                <div class="visualization">
+                    <svg viewBox="0 0 500 250" width="450" height="220">
+                        <!-- Before -->
+                        <text x="125" y="30" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">Before: One Agent</text>
+                        <g>
+                            <rect x="55" y="50" width="140" height="30" rx="4" fill="#fafaf8" stroke="#999" stroke-width="1.5"/>
+                            <text x="125" y="70" font-size="11" text-anchor="middle" fill="#1a1a1a">Research Asia</text>
+                            
+                            <path d="M 125 80 L 125 95" stroke="#999" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            
+                            <rect x="55" y="95" width="140" height="30" rx="4" fill="#fafaf8" stroke="#999" stroke-width="1.5"/>
+                            <text x="125" y="115" font-size="11" text-anchor="middle" fill="#1a1a1a">Research Europe</text>
+                            
+                            <path d="M 125 125 L 125 140" stroke="#999" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            
+                            <rect x="55" y="140" width="140" height="30" rx="4" fill="#fafaf8" stroke="#999" stroke-width="1.5"/>
+                            <text x="125" y="160" font-size="11" text-anchor="middle" fill="#1a1a1a">Research South America</text>
+                        </g>
+                        
+                        <text x="125" y="195" font-size="12" font-weight="600" text-anchor="middle" fill="#c17f5b">Sequential: Slow</text>
+
+                        <!-- After -->
+                        <text x="375" y="30" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">After: Multiple Agents</text>
+                        
+                        <rect x="310" y="50" width="130" height="30" rx="4" fill="#fafaf8" stroke="#c17f5b" stroke-width="2"/>
+                        <text x="375" y="70" font-size="11" text-anchor="middle" fill="#1a1a1a">Agent: Asia</text>
+                        
+                        <rect x="310" y="95" width="130" height="30" rx="4" fill="#fafaf8" stroke="#c17f5b" stroke-width="2"/>
+                        <text x="375" y="115" font-size="11" text-anchor="middle" fill="#1a1a1a">Agent: Europe</text>
+                        
+                        <rect x="310" y="140" width="130" height="30" rx="4" fill="#fafaf8" stroke="#c17f5b" stroke-width="2"/>
+                        <text x="375" y="160" font-size="11" text-anchor="middle" fill="#1a1a1a">Agent: South America</text>
+
+                        <path d="M 350 160 Q 380 180 380 180" stroke="#c17f5b" stroke-width="2" stroke-dasharray="5,5"/>
+                        <text x="375" y="205" font-size="12" font-weight="600" text-anchor="middle" fill="#7cb342">Parallel: Thorough</text>
+
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#999"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                <div style="text-align: center; font-size: 0.95rem; color: #666; margin-top: 15px;">
+                    <strong>Result:</strong> More thorough coverage of information space
+                    <div style="margin-top: 6px;"><strong>Cost:</strong> 3-10x more tokens, but better results</div>
+                </div>
+            </div>
+            <div class="footer">
+                <div></div>
+                <div class="slide-number">5 / 10</div>
+            </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide">
+            <h2>Situation 3: Too Many Tools</h2>
+            <div class="content">
+                <div class="visualization">
+                    <svg viewBox="0 0 500 250" width="450" height="220">
+                        <!-- Before -->
+                        <text x="125" y="30" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">Before: One Agent</text>
+                        <rect x="30" y="50" width="190" height="150" rx="6" fill="#fff5f3" stroke="#c17f5b" stroke-width="2"/>
+                        
+                        <circle cx="60" cy="85" r="8" fill="#ddd"/>
+                        <circle cx="90" cy="75" r="8" fill="#ddd"/>
+                        <circle cx="120" cy="80" r="8" fill="#ddd"/>
+                        <circle cx="150" cy="90" r="8" fill="#ddd"/>
+                        <circle cx="180" cy="85" r="8" fill="#ddd"/>
+                        
+                        <circle cx="65" cy="125" r="8" fill="#ddd"/>
+                        <circle cx="100" cy="135" r="8" fill="#ddd"/>
+                        <circle cx="130" cy="130" r="8" fill="#ddd"/>
+                        <circle cx="165" cy="140" r="8" fill="#ddd"/>
+                        <circle cx="190" cy="125" r="8" fill="#ddd"/>
+                        
+                        <circle cx="75" cy="165" r="8" fill="#ddd"/>
+                        <circle cx="110" cy="170" r="8" fill="#ddd"/>
+                        <circle cx="145" cy="175" r="8" fill="#ddd"/>
+                        <circle cx="175" cy="165" r="8" fill="#ddd"/>
+                        
+                        <text x="125" y="215" font-size="12" font-weight="600" text-anchor="middle" fill="#c17f5b">40+ tools: Confused</text>
+
+                        <!-- After -->
+                        <text x="375" y="30" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">After: Specialist Agents</text>
+                        
+                        <!-- CRM Agent -->
+                        <rect x="295" y="50" width="80" height="60" rx="6" fill="#fafaf8" stroke="#c17f5b" stroke-width="2"/>
+                        <text x="335" y="68" font-size="10" font-weight="600" text-anchor="middle" fill="#1a1a1a">CRM Agent</text>
+                        <circle cx="315" cy="90" r="5" fill="#c17f5b"/>
+                        <circle cx="335" cy="88" r="5" fill="#c17f5b"/>
+                        <circle cx="355" cy="90" r="5" fill="#c17f5b"/>
+                        
+                        <!-- Marketing Agent -->
+                        <rect x="385" y="50" width="80" height="60" rx="6" fill="#fafaf8" stroke="#c17f5b" stroke-width="2"/>
+                        <text x="425" y="68" font-size="10" font-weight="600" text-anchor="middle" fill="#1a1a1a">Marketing Agent</text>
+                        <circle cx="405" cy="90" r="5" fill="#c17f5b"/>
+                        <circle cx="425" cy="88" r="5" fill="#c17f5b"/>
+                        <circle cx="445" cy="90" r="5" fill="#c17f5b"/>
+                        
+                        <!-- Messaging Agent -->
+                        <rect x="340" y="125" width="80" height="60" rx="6" fill="#fafaf8" stroke="#c17f5b" stroke-width="2"/>
+                        <text x="380" y="143" font-size="10" font-weight="600" text-anchor="middle" fill="#1a1a1a">Messaging Agent</text>
+                        <circle cx="360" cy="165" r="5" fill="#c17f5b"/>
+                        <circle cx="380" cy="163" r="5" fill="#c17f5b"/>
+                        <circle cx="400" cy="165" r="5" fill="#c17f5b"/>
+                        
+                        <text x="375" y="215" font-size="12" font-weight="600" text-anchor="middle" fill="#7cb342">Specialists: Accurate</text>
+
+                        <defs>
+                            <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#999"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                <div style="text-align: center; font-size: 0.95rem; color: #666; margin-top: 15px;">
+                    <strong>When:</strong> 15+ tools, error rates rising, domain confusion
+                    <div style="margin-top: 6px;"><strong>Watch out:</strong> Routing complexity, maintenance overhead</div>
+                </div>
+            </div>
+            <div class="footer">
+                <div></div>
+                <div class="slide-number">6 / 10</div>
+            </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide">
+            <h2>The Common Mistake</h2>
+            <div class="content">
+                <div style="margin-bottom: 25px;">
+                    <div style="background: #ffe6dd; padding: 20px; border-radius: 8px; border-left: 4px solid #c17f5b; margin-bottom: 20px;">
+                        <strong style="display: block; margin-bottom: 10px; color: #1a1a1a;">Don't: Divide by work phases</strong>
+                        <div style="color: #666; font-size: 0.95rem;">Agent 1 plans → Agent 2 builds → Agent 3 tests → Agent 4 reviews</div>
+                        <div style="color: #c17f5b; font-size: 0.9rem; margin-top: 8px;">Result: Handoff losses, coordination overhead, lost context</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="background: #f0f8f3; padding: 20px; border-radius: 8px; border-left: 4px solid #7cb342; margin-bottom: 20px;">
+                        <strong style="display: block; margin-bottom: 10px; color: #1a1a1a;">Do: Divide by context boundaries</strong>
+                        <div style="color: #666; font-size: 0.95rem;">One agent handles full feature with its tests. Different agent handles different feature.</div>
+                        <div style="color: #7cb342; font-size: 0.9rem; margin-top: 8px;">Result: Minimal handoffs, focused context, better results</div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div></div>
+                <div class="slide-number">7 / 10</div>
+            </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide">
+            <h2>The Verification Agent Pattern</h2>
+            <div class="content">
+                <div style="margin-bottom: 20px;">
+                    <p style="font-size: 1rem; line-height: 1.7; color: #3a3a3a; margin-bottom: 15px;">
+                        <span class="highlight">This one pattern works everywhere:</span> Main agent does work → Separate agent verifies it works.
+                    </p>
+                </div>
+
+                <div class="situation">
+                    <div class="situation-title">Why It Works</div>
+                    <div class="situation-desc">Verifier only needs to test (minimal context required). Doesn't need to understand design decisions. Clean separation of concerns.</div>
+                </div>
+
+                <div class="situation">
+                    <div class="situation-title">Examples</div>
+                    <div class="situation-desc">Code: agent writes, verifier runs tests. Content: agent writes, verifier fact-checks. Compliance: agent creates, verifier checks rules.</div>
+                </div>
+
+                <div style="margin-top: 20px; background: #ffe6dd; padding: 15px; border-radius: 8px; border-left: 4px solid #c17f5b;">
+                    <div style="font-size: 0.95rem; color: #1a1a1a; font-weight: 600; margin-bottom: 8px;">Common Failure:</div>
+                    <div style="font-size: 0.9rem; color: #666;">Verifier checks halfway and declares success. Fix: Be explicit. "Run full test suite. Report every failure. Only mark PASSED if 100% pass."</div>
+                </div>
+            </div>
+            <div class="footer">
+                <div></div>
+                <div class="slide-number">8 / 10</div>
+            </div>
+        </div>
+
+        <!-- Slide 9 -->
+        <div class="slide">
+            <h2>Decision Framework</h2>
+            <div class="content">
+                <div class="framework">
+                    <strong>Do I have a specific problem?</strong>
+                    <div class="framework-answer">No → Use one agent</div>
+
+                    <strong>Is it ONE of these three?</strong>
+                    <div class="framework-answer">
+                        Too much info cluttering thinking?<br/>
+                        Independent work to parallelize?<br/>
+                        More than 15 tools causing errors?
+                    </div>
+                    <div class="framework-answer">
+                        Yes to any → Multiple agents might help<br/>
+                        No to all → One agent + better prompting
+                    </div>
+
+                    <strong>Before adding agents, try:</strong>
+                    <div class="framework-answer">
+                        Better prompting • Better tools • Tool Search<br/>
+                        Context compaction • Multiple separate chats
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div></div>
+                <div class="slide-number">9 / 10</div>
+            </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide">
+            <h2>Key Takeaway</h2>
+            <div class="content" style="justify-content: center;">
+                <div style="text-align: center;">
+                    <div class="key-takeaway">
+                        <strong>Start with one great agent.</strong>
+                        Add more only when you prove you need them.
+                    </div>
+                    <div class="key-takeaway" style="margin-top: 30px;">
+                        <strong>Measure the impact:</strong>
+                        Single agent baseline vs. your approach. Did you hit one of the three situations? Is the quality jump worth 3-10x more tokens?
+                    </div>
+                    <div class="key-takeaway" style="margin-top: 30px; color: #999;">
+                        Most teams never need to get there.
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div></div>
+                <div class="slide-number">10 / 10</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="prev" onclick="previousSlide()">←</button>
+        <div class="dots" id="dots"></div>
+        <button id="next" onclick="nextSlide()">→</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Create dots
+        const dotsContainer = document.getElementById('dots');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
+        }
+
+        function showSlide(n) {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active', 'prev');
+                if (index === n) {
+                    slide.classList.add('active');
+                } else if (index < n) {
+                    slide.classList.add('prev');
+                }
+            });
+
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === n);
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function goToSlide(n) {
+            currentSlide = n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') previousSlide();
+        });
+    </script>
+</body>
+</html>
