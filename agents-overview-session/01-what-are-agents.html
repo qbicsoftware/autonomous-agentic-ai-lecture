@@ -299,7 +299,7 @@
     <ul>
       <li><strong>System Prompt</strong> primes the model with identity, rules, and tool descriptions</li>
       <li><strong>Tool Schemas</strong> are injected into the prompt so the LLM "knows" what's available</li>
-      <li><strong>Function Calling API</strong> constrains output to valid JSON matching a schema</li>
+      <li><strong>Function Calling API</strong> is trained to generate valid JSON tool calls matching a schema</li>
       <li>The LLM <strong>probabilistically generates</strong> which tool to call — it is not a hard-coded rule</li>
     </ul>
     <div class="schema-box" style="margin-top: 2vh;">{
@@ -350,7 +350,7 @@
         <ul style="font-size:clamp(1rem,2vh,1.5rem); text-align:left; max-width:28vw;">
           <li>Receives tool schemas <strong>inside the prompt</strong></li>
           <li><strong>Probabilistically generates</strong> a tool call JSON</li>
-          <li>Constrained by API grammar to valid schemas</li>
+          <li>Trained to generate valid JSON tool calls matching the schema</li>
           <li class="muted">Never touches your files — only plans</li>
         </ul>
       </div>
@@ -481,6 +481,7 @@
       <li>Examples: <strong>OpenAI API</strong>, <strong>Anthropic API</strong>, <strong>Groq</strong>, <strong>Together</strong>, <strong>Ollama</strong>, <strong>vLLM</strong></li>
       <li>They expose the <strong>same interface</strong>: chat completions with function calling</li>
       <li>You <strong>swap providers</strong> by changing a base URL and API key</li>
+      <li><strong>⚠️ Caveat:</strong> Function calling capability varies across providers and models — local models may have limited or inconsistent tool support</li>
     </ul>
     <div class="schema-box" style="margin-top: 2vh;">POST /v1/chat/completions
 {
@@ -498,6 +499,7 @@
       <li>Open-source servers (Ollama, vLLM, llama.cpp) all implement it</li>
       <li>Any client code using this standard works with <strong>any provider</strong></li>
       <li>Function calling, streaming, tool use — all normalized</li>
+      <li><strong>⚠️ Caveat:</strong> Function calling capability varies across providers and models — local models may have limited or inconsistent tool support</li>
     </ul>
     <div class="flow" style="margin-top: 4vh;">
       <div class="box">Your Agent Code</div>
@@ -545,7 +547,8 @@ client = openai.OpenAI(
     api_key="..."
 )
 
-# The agent loop
+import json
+
 def agent_loop(prompt, tools):
     messages = [{"role": "user", "content": prompt}]
     while True:
@@ -556,9 +559,10 @@ def agent_loop(prompt, tools):
         )
         msg = response.choices[0].message
         if msg.tool_calls:
-            messages.append(msg)
+            messages.append(msg.model_dump())  # or construct manually: {"role": "assistant", "content": ..., "tool_calls": [...]}
             for call in msg.tool_calls:
-                result = execute_tool(call)  # Your code here
+                # call.function.name / call.function.arguments (parse with json.loads)
+                result = execute_tool(call.function.name, json.loads(call.function.arguments))
                 messages.append({
                     "role": "tool",
                     "tool_call_id": call.id,
@@ -604,7 +608,7 @@ def agent_loop(prompt, tools):
 <div class="nav-zone nav-prev" onclick="goPrev()"></div>
 <div class="nav-zone nav-next" onclick="goNext()"></div>
 <div class="progress" id="progress"></div>
-<div class="slide-counter"><span id="slide-num">1</span> / <span id="slide-total">12</span></div>
+<div class="slide-counter"><span id="slide-num">1</span> / <span id="slide-total">19</span></div>
 
 <script>
   let current = 0;
